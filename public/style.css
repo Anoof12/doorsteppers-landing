@@ -211,8 +211,12 @@ h1, h2, h3, h4 { font-family: 'League Spartan', sans-serif; }
 }
 .hero-img {
   width: 100%;
+  height: 520px;
+  object-fit: cover;
+  object-position: center top;
   border-radius: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 20px 60px rgba(19, 54, 141, 0.22);
+  display: block;
 }
 
 /* ---- PROBLEM ---- */
@@ -634,6 +638,7 @@ h1, h2, h3, h4 { font-family: 'League Spartan', sans-serif; }
   .hero-content { max-width: 100%; }
   .hero-buttons { justify-content: center; }
   .hero-stats { justify-content: center; }
+  .hero-img { height: 320px; }
   .solution-inner { flex-direction: column-reverse; gap: 48px; }
   .closing-inner { flex-direction: column; text-align: center; }
   .closing-text p { max-width: 100%; }
