@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOORSTEPPERS — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700;800;900&family=Jost:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue: #13368D;
+      --orange: #FF9330;
+      --orange-light: #FDC474;
+      --cream: #FDF4E7;
+      --dark: #0d1f4e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Jost', sans-serif; background: #f0f4ff; color: #1a1a2e; min-height: 100vh; }
+
+    .header {
+      background: var(--blue);
+      color: white;
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 { font-family: 'League Spartan', sans-serif; font-size: 1.5rem; }
+    .header p { font-size: 0.85rem; opacity: 0.7; margin-top: 4px; }
+
+    .login-wrap {
+      max-width: 420px;
+      margin: 100px auto;
+      background: white;
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: 0 8px 40px rgba(19,54,141,0.12);
+      text-align: center;
+    }
+    .login-wrap img { height: 40px; margin-bottom: 24px; }
+    .login-wrap h2 { font-family: 'League Spartan', sans-serif; color: var(--blue); margin-bottom: 8px; }
+    .login-wrap p { color: #777; font-size: 0.9rem; margin-bottom: 28px; }
+    .login-wrap input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1.5px solid #ddd;
+      border-radius: 10px;
+      font-family: 'Jost', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      margin-bottom: 16px;
+    }
+    .login-wrap input:focus { border-color: var(--orange); }
+    .btn-login {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-login:hover { background: var(--orange); }
+    .error-msg { color: #e55; font-size: 0.85rem; margin-top: 10px; }
+
+    .dashboard { display: none; padding: 40px; max-width: 1300px; margin: 0 auto; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(19,54,141,0.07);
+      border-top: 4px solid var(--orange);
+    }
+    .stat-card .num {
+      font-family: 'League Spartan', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--blue);
+    }
+    .stat-card .label { color: #888; font-size: 0.85rem; margin-top: 4px; }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn-export {
+      background: var(--orange);
+      color: white;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 700;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+    .btn-export:hover { background: #e07d1a; }
+    .search-input {
+      padding: 12px 18px;
+      border: 1.5px solid #ddd;
+      border-radius: 50px;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      width: 260px;
+    }
+    .search-input:focus { border-color: var(--blue); }
+
+    .table-wrap {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(19,54,141,0.07);
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead { background: var(--blue); color: white; }
+    thead th {
+      padding: 14px 16px;
+      text-align: left;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+    tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
+    tbody tr:hover { background: #fdf8f0; }
+    tbody td { padding: 13px 16px; color: #333; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-yes { background: #e8f5e9; color: #2e7d32; }
+    .badge-no { background: #fce4ec; color: #c62828; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+    .service-tag {
+      display: inline-block;
+      background: #e8ecf8;
+      color: var(--blue);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      margin: 2px;
+    }
+    .no-data { text-align: center; padding: 60px; color: #aaa; font-size: 1rem; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>DOORSTEPPERS Admin</h1>
+    <p>Waitlist Response Dashboard</p>
+  </div>
+  <img src="assets/doorsteppers_logo.png" alt="DOORSTEPPERS" style="height:36px;filter:brightness(0) invert(1);" />
+</div>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <img src="assets/doorsteppers_logo.png" alt="DOORSTEPPERS" />
+  <h2>Admin Access</h2>
+  <p>Enter the admin password to view waitlist responses</p>
+  <input type="password" id="pwInput" placeholder="Admin password" onkeydown="if(event.key==='Enter') login()" />
+  <button class="btn-login" onclick="login()">Access Dashboard</button>
+  <div class="error-msg hidden" id="loginErr">Incorrect password. Please try again.</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="stats-row" id="statsRow"></div>
+  <div class="actions">
+    <a class="btn-export" id="exportBtn" href="#" onclick="exportCSV(event)">Export CSV</a>
+    <input class="search-input" id="searchInput" type="text" placeholder="Search by name, email, city..." oninput="filterTable()" />
+    <span id="filterCount" style="color:#888;font-size:0.85rem;"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>City</th>
+          <th>Profile</th>
+          <th>Services</th>
+          <th>Would Pay</th>
+          <th>Wants to be Stepper</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  let allData = [];
+  let currentPassword = '';
+
+  async function login() {
+    const pw = document.getElementById('pwInput').value;
+    if (!pw) return;
+    try {
+      const res = await fetch(`/api/admin/responses?password=${encodeURIComponent(pw)}`);
+      if (res.status === 401) {
+        document.getElementById('loginErr').classList.remove('hidden');
+        return;
+      }
+      const data = await res.json();
+      currentPassword = pw;
+      allData = data.responses;
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      renderStats(data.responses);
+      renderTable(data.responses);
+    } catch {
+      document.getElementById('loginErr').textContent = 'Server error. Make sure the server is running.';
+      document.getElementById('loginErr').classList.remove('hidden');
+    }
+  }
+
+  function renderStats(rows) {
+    const steppers = rows.filter(r => r.want_to_be_stepper).length;
+    const wouldPay = rows.filter(r => r.would_pay === 'Yes, definitely').length;
+    const cities = new Set(rows.map(r => r.location).filter(Boolean)).size;
+
+    const profiles = {};
+    rows.forEach(r => { if (r.customer_type) profiles[r.customer_type] = (profiles[r.customer_type]||0)+1; });
+    const topProfile = Object.entries(profiles).sort((a,b)=>b[1]-a[1])[0];
+
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card"><div class="num">${rows.length}</div><div class="label">Total Sign-ups</div></div>
+      <div class="stat-card"><div class="num">${steppers}</div><div class="label">Want to be Steppers</div></div>
+      <div class="stat-card"><div class="num">${wouldPay}</div><div class="label">Definitely Would Pay</div></div>
+      <div class="stat-card"><div class="num">${cities}</div><div class="label">Cities Represented</div></div>
+      <div class="stat-card"><div class="num">${topProfile ? topProfile[1] : 0}</div><div class="label">Top Segment: ${topProfile ? formatProfile(topProfile[0]) : '—'}</div></div>
+    `;
+  }
+
+  function formatProfile(p) {
+    return { busy_professional:'Busy Pro', student:'Student', parent:'Parent', elderly:'Elderly', expat:'Expat', corporate:'Corporate', other:'Other' }[p] || p;
+  }
+
+  function renderTable(rows) {
+    const body = document.getElementById('tableBody');
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="9" class="no-data">No sign-ups yet. Share the landing page to start collecting responses!</td></tr>';
+      document.getElementById('filterCount').textContent = '';
+      return;
+    }
+    document.getElementById('filterCount').textContent = `Showing ${rows.length} of ${allData.length} entries`;
+    body.innerHTML = rows.map((r, i) => `
+      <tr>
+        <td style="color:#aaa">${r.id}</td>
+        <td><strong>${esc(r.full_name)}</strong></td>
+        <td style="color:#555">${esc(r.email)}</td>
+        <td>${esc(r.location || '—')}</td>
+        <td>${r.customer_type ? `<span class="badge badge-orange">${formatProfile(r.customer_type)}</span>` : '—'}</td>
+        <td>${r.services ? r.services.split(', ').map(s=>`<span class="service-tag">${esc(s)}</span>`).join('') : '—'}</td>
+        <td style="font-size:0.82rem;color:#555">${esc(r.would_pay || '—')}</td>
+        <td><span class="badge ${r.want_to_be_stepper ? 'badge-yes' : 'badge-no'}">${r.want_to_be_stepper ? 'Yes' : 'No'}</span></td>
+        <td style="color:#aaa;font-size:0.8rem">${r.submitted_at ? r.submitted_at.slice(0,16) : '—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = allData.filter(r =>
+      (r.full_name||'').toLowerCase().includes(q) ||
+      (r.email||'').toLowerCase().includes(q) ||
+      (r.location||'').toLowerCase().includes(q) ||
+      (r.customer_type||'').toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  }
+
+  function exportCSV(e) {
+    e.preventDefault();
+    window.location.href = `/api/admin/export?password=${encodeURIComponent(currentPassword)}`;
+  }
+
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
+</body>
+</html>
