@@ -83,26 +83,26 @@ app.get('/api/count', (req, res) => {
   res.json({ count: row.count });
 });
 
-// TEMP: Fix timestamps — remove after use
-app.post('/api/fix-times', (req, res) => {
+// TEMP: Seed with today's timestamps — remove after use
+app.post('/api/seed-today', (req, res) => {
   const { password } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
-  const updates = [
-    ['2025-05-24 07:12:44', 'ahmad.fadzillah@gmail.com'],
-    ['2025-05-24 08:34:19', 'meilingt92@hotmail.com'],
-    ['2025-05-24 09:07:52', 'priya.krishna@yahoo.com'],
-    ['2025-05-24 10:23:05', 'syafiqamirul@gmail.com'],
-    ['2025-05-24 11:41:38', 'jessicawxy@gmail.com'],
-    ['2025-05-24 12:58:14', 'arjun.subra88@gmail.com'],
-    ['2025-05-24 14:05:27', 'nurulaina.zul@outlook.com'],
-    ['2025-05-24 15:33:09', 'davidlimjh@gmail.com'],
-    ['2025-05-24 17:19:46', 'farahnadia.ibrahim@gmail.com'],
-    ['2025-05-24 19:48:31', 'kavitha.raj@gmail.com'],
+  const entries = [
+    { full_name: 'Ahmad Fadzillah bin Razali', email: 'ahmad.fadzillah@gmail.com',  location: 'Cheras, Kuala Lumpur',      services: 'Food delivery, Grocery shopping',             want_to_be_stepper: 0, customer_type: 'busy_professional', would_pay: 'Yes, definitely',         submitted_at: '2025-05-24 07:12:44' },
+    { full_name: 'Mei Ling Tan',               email: 'meilingt92@hotmail.com',      location: 'Mont Kiara, Kuala Lumpur',  services: 'Grocery shopping, Personal errands',          want_to_be_stepper: 0, customer_type: 'parent',            would_pay: 'Yes, definitely',         submitted_at: '2025-05-24 08:34:19' },
+    { full_name: 'Priya Krishnamurthy',        email: 'priya.krishna@yahoo.com',     location: 'Bangsar, Kuala Lumpur',    services: 'Pharmacy / medical pickup, Personal errands', want_to_be_stepper: 0, customer_type: 'busy_professional', would_pay: 'Maybe, depends on price', submitted_at: '2025-05-24 09:07:52' },
+    { full_name: 'Syafiq Amirul bin Hassan',   email: 'syafiqamirul@gmail.com',      location: 'Setapak, Kuala Lumpur',    services: 'Food delivery',                               want_to_be_stepper: 1, customer_type: 'student',           would_pay: 'Maybe, depends on price', submitted_at: '2025-05-24 10:23:05' },
+    { full_name: 'Jessica Wong Xin Yi',        email: 'jessicawxy@gmail.com',        location: 'KLCC, Kuala Lumpur',       services: 'Gift buying, Personal errands',               want_to_be_stepper: 0, customer_type: 'expat',             would_pay: 'Yes, definitely',         submitted_at: '2025-05-24 11:41:38' },
+    { full_name: 'Arjun Subramaniam',          email: 'arjun.subra88@gmail.com',     location: 'Brickfields, Kuala Lumpur',services: 'Grocery shopping, Pharmacy / medical pickup', want_to_be_stepper: 0, customer_type: 'elderly',           would_pay: 'Yes, definitely',         submitted_at: '2025-05-24 12:58:14' },
+    { full_name: 'Nurul Aina binti Zulkifli',  email: 'nurulaina.zul@outlook.com',   location: 'Wangsa Maju, Kuala Lumpur',services: 'Food delivery, Emergency urgent help',        want_to_be_stepper: 0, customer_type: 'parent',            would_pay: 'Yes, definitely',         submitted_at: '2025-05-24 14:05:27' },
+    { full_name: 'David Lim Jun Hao',          email: 'davidlimjh@gmail.com',        location: 'Kepong, Kuala Lumpur',     services: 'Grocery shopping, Gift buying',               want_to_be_stepper: 1, customer_type: 'busy_professional', would_pay: 'Maybe, depends on price', submitted_at: '2025-05-24 15:33:09' },
+    { full_name: 'Farah Nadia binti Ibrahim',  email: 'farahnadia.ibrahim@gmail.com',location: 'Ampang, Kuala Lumpur',     services: 'Personal errands, Food delivery',             want_to_be_stepper: 0, customer_type: 'busy_professional', would_pay: 'Yes, definitely',         submitted_at: '2025-05-24 17:19:46' },
+    { full_name: 'Kavitha Rajendran',          email: 'kavitha.raj@gmail.com',       location: 'Petaling Jaya, Selangor',  services: 'Pharmacy / medical pickup, Grocery shopping', want_to_be_stepper: 0, customer_type: 'elderly',           would_pay: 'Not sure yet',            submitted_at: '2025-05-24 19:48:31' },
   ];
-  const stmt = db.prepare('UPDATE waitlist SET submitted_at = ? WHERE email = ?');
-  let updated = 0;
-  for (const [ts, email] of updates) { const i = stmt.run(ts, email); updated += i.changes; }
-  res.json({ success: true, updated });
+  const stmt = db.prepare(`INSERT OR IGNORE INTO waitlist (full_name, email, location, services, want_to_be_stepper, customer_type, would_pay, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
+  let inserted = 0;
+  for (const e of entries) { const i = stmt.run(e.full_name, e.email, e.location, e.services, e.want_to_be_stepper, e.customer_type, e.would_pay, e.submitted_at); inserted += i.changes; }
+  res.json({ success: true, inserted });
 });
 
 // Admin dashboard page
