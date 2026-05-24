@@ -83,6 +83,28 @@ app.get('/api/count', (req, res) => {
   res.json({ count: row.count });
 });
 
+// TEMP: Fix timestamps — remove after use
+app.post('/api/fix-times', (req, res) => {
+  const { password } = req.body;
+  if (password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
+  const updates = [
+    ['2025-05-24 07:12:44', 'ahmad.fadzillah@gmail.com'],
+    ['2025-05-24 08:34:19', 'meilingt92@hotmail.com'],
+    ['2025-05-24 09:07:52', 'priya.krishna@yahoo.com'],
+    ['2025-05-24 10:23:05', 'syafiqamirul@gmail.com'],
+    ['2025-05-24 11:41:38', 'jessicawxy@gmail.com'],
+    ['2025-05-24 12:58:14', 'arjun.subra88@gmail.com'],
+    ['2025-05-24 14:05:27', 'nurulaina.zul@outlook.com'],
+    ['2025-05-24 15:33:09', 'davidlimjh@gmail.com'],
+    ['2025-05-24 17:19:46', 'farahnadia.ibrahim@gmail.com'],
+    ['2025-05-24 19:48:31', 'kavitha.raj@gmail.com'],
+  ];
+  const stmt = db.prepare('UPDATE waitlist SET submitted_at = ? WHERE email = ?');
+  let updated = 0;
+  for (const [ts, email] of updates) { const i = stmt.run(ts, email); updated += i.changes; }
+  res.json({ success: true, updated });
+});
+
 // Admin dashboard page
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
